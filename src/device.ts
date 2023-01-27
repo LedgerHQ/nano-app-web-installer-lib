@@ -38,10 +38,10 @@ const deviceVersionRangesForLocalization: { [key in DeviceModelId]?: string } =
     nanoSP: '>=1.1.0',
   };
 
-export const isDashboardName = (name: string): boolean =>
+const isDashboardName = (name: string): boolean =>
   ['BOLOS', 'OLOS\u0000'].includes(name);
 
-export const isDeviceLocalizationSupported = (
+const isDeviceLocalizationSupported = (
   seVersion: string,
   modelId?: DeviceModelId,
 ): boolean =>
@@ -52,7 +52,7 @@ export const isDeviceLocalizationSupported = (
     deviceVersionRangesForLocalization[modelId] as string,
   );
 
-export const isBootloaderVersionSupported = (
+const isBootloaderVersionSupported = (
   seVersion: string,
   modelId?: DeviceModelId,
 ): boolean =>
@@ -67,7 +67,7 @@ export const isBootloaderVersionSupported = (
  * @returns whether the Hardware Version bytes are included in the result of the
  * getVersion APDU
  * */
-export const isHardwareVersionSupported = (
+const isHardwareVersionSupported = (
   seVersion: string,
   modelId?: DeviceModelId,
 ): boolean =>
@@ -232,7 +232,7 @@ export const getAppAndVersion = async (
   };
 };
 
-export default async function getDeviceInfo(
+export async function getDeviceInfo(
   transport: Transport,
 ): Promise<DeviceInfo> {
   const probablyOnDashboard = await getAppAndVersion(transport)
@@ -323,7 +323,7 @@ export default async function getDeviceInfo(
   };
 }
 
-export const isDevFirmware = (seVersion: string | undefined): boolean => {
+const isDevFirmware = (seVersion: string | undefined): boolean => {
   if (!seVersion) return false;
 
   const knownDevSuffixes = ['lo', 'rc', 'il', 'tr']; // FW can't guarantee non digits in versions

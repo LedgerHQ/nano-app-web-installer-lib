@@ -11,6 +11,15 @@ import {
 } from '@ledgerhq/types-live';
 import { FirmwareNotRecognized } from '@ledgerhq/errors';
 
+const getTargetId = async (transport: Transport): Promise<number> => {
+  const res = await transport.send(0xe0, 0x01, 0x00, 0x00);
+  const data = res.slice(0, res.length - 2);
+
+  // parse the target id of either BL or SE
+  const targetId = data.readUIntBE(0, 4);
+  return targetId;
+};
+
 export const getAppsList = async (): Promise<Application[]> => {
   const { data } = await axios<Application[]>({
     method: 'GET',
@@ -24,24 +33,14 @@ export const getAppsList = async (): Promise<Application[]> => {
   return data;
 };
 
-export const getTargetId = async (transport: Transport): Promise<number> => {
-  const res = await transport.send(0xe0, 0x01, 0x00, 0x00);
-  const data = res.slice(0, res.length - 2);
-
-  // parse the target id of either BL or SE
-  const targetId = data.readUIntBE(0, 4);
-  return targetId;
-};
-
 export const installApp = async (
-  targetId: number,
   app,
   transport: Transport,
   isDelete: boolean,
 ): Promise<void> => {
   const url = new URL(`wss://scriptrunner.api.live.ledger.com/update/install`);
 
-  url.searchParams.append('targetId', String(targetId));
+  url.searchParams.append('targetId', String(await getTargetId(transport)));
   url.searchParams.append('perso', app.perso);
   url.searchParams.append('deleteKey', app.delete_key);
   url.searchParams.append('firmware', isDelete ? app.delete : app.firmware);
