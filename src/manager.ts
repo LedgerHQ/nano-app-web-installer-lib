@@ -138,7 +138,6 @@ const applicationsByDevice = async (
 export const getAppsListByDevice = async (
   deviceInfo: DeviceInfo,
   isDevMode = false, // TODO getFullListSortedCryptoCurrencies can be a local function.. too much dep for now
-  getFullListSortedCryptoCurrencies: any = () => Promise.resolve([]),
   provider: number,
 ): Promise<ApplicationVersion[]> => {
   if (deviceInfo.isOSU || deviceInfo.isBootloader) return Promise.resolve([]);
@@ -152,11 +151,10 @@ export const getAppsListByDevice = async (
   ]).then(([deviceVersion, firmwareData]) =>
     applicationsByDevice(firmwareData.id, deviceVersion.id, provider),
   );
-  const [applicationsList, compatibleAppVersionsList, sortedCryptoCurrencies] =
+  const [applicationsList, compatibleAppVersionsList] =
     await Promise.all([
       getAppsList(),
       applicationsByDeviceP,
-      getFullListSortedCryptoCurrencies(),
     ]);
   const filtered = isDevMode
     ? compatibleAppVersionsList.slice(0)
@@ -169,17 +167,5 @@ export const getAppsListByDevice = async (
 
         return false;
       });
-  const sortedCryptoApps: ApplicationVersion[] = [];
-  // sort by crypto first
-  sortedCryptoCurrencies.forEach((crypto) => {
-    const app = filtered.find(
-      (item) => item.name.toLowerCase() === crypto.managerAppName.toLowerCase(),
-    );
-
-    if (app) {
-      filtered.splice(filtered.indexOf(app), 1);
-      sortedCryptoApps.push({ ...app, currency: crypto });
-    }
-  });
-  return sortedCryptoApps.concat(filtered);
+    return filtered;
 };

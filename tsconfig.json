@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "Node16",
     "lib": ["ES2022"],
     "moduleResolution": "node",
     "rootDir": ".",
-    "outDir": "build",
+    "outDir": "dist",
     "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "alwaysStrict": true,
@@ -22,7 +21,7 @@
     "esModuleInterop": true,
     "declaration": true
   },
-  "include": ["src/**/*", "__tests__/**/*"],
+  "include": ["src/*"],
   "exclude": [
     "node_modules",
     "dist"
