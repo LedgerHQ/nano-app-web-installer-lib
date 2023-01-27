@@ -1,13 +1,13 @@
 {
   "name": "nano-app-web-installer-lib",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Lib to help install nano app easier",
   "type": "module",
   "engines": {
     "node": ">= 16 <19"
   },
-  "main": "build/src/main.js",
-  "types": "build/src/main.d.ts",
+  "main": "dist/src/main.js",
+  "types": "dist/src/main.d.ts",
   "devDependencies": {
     "@ledgerhq/types-live": "^6.28.1",
     "@types/jest": "~29.2",
