@@ -50,14 +50,10 @@ export const installApp = async (
   );
   url.searchParams.append('hash', app.hash);
 
-  try {
-    await createSocket({
-      transport,
-      url,
-    });
-  } catch (e) {
-    throw new Error(e);
-  }
+  await createSocket({
+    transport,
+    url,
+  });
 };
 
 const getDeviceVersion = async (
@@ -151,11 +147,10 @@ export const getAppsListByDevice = async (
   ]).then(([deviceVersion, firmwareData]) =>
     applicationsByDevice(firmwareData.id, deviceVersion.id, provider),
   );
-  const [applicationsList, compatibleAppVersionsList] =
-    await Promise.all([
-      getAppsList(),
-      applicationsByDeviceP,
-    ]);
+  const [applicationsList, compatibleAppVersionsList] = await Promise.all([
+    getAppsList(),
+    applicationsByDeviceP,
+  ]);
   const filtered = isDevMode
     ? compatibleAppVersionsList.slice(0)
     : compatibleAppVersionsList.filter((version) => {
@@ -167,5 +162,5 @@ export const getAppsListByDevice = async (
 
         return false;
       });
-    return filtered;
+  return filtered;
 };
