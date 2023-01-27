@@ -1,14 +1,16 @@
 {
-  "name": "node-typescript-boilerplate",
-  "version": "0.0.0",
-  "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
+  "name": "nano-app-web-installer-lib",
+  "version": "0.0.1",
+  "description": "Lib to help install nano app easier",
   "type": "module",
   "engines": {
-    "node": ">= 18.12 <19"
+    "node": ">= 16 <19"
   },
   "devDependencies": {
+    "@ledgerhq/types-live": "^6.28.1",
     "@types/jest": "~29.2",
     "@types/node": "~18",
+    "@types/ws": "^8.5.4",
     "@typescript-eslint/eslint-plugin": "~5.44",
     "@typescript-eslint/parser": "~5.44",
     "eslint": "~8.28",
@@ -33,10 +35,17 @@
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "jest --watch"
   },
-  "author": "Jakub Synowiec <jsynowiec@users.noreply.github.com>",
+  "author": "Henri Ly<henri.ly-ext@ledger.fr>",
   "license": "Apache-2.0",
   "dependencies": {
-    "tslib": "~2.4"
+    "@ledgerhq/devices": "^7.0.7",
+    "@ledgerhq/errors": "^6.12.3",
+    "@ledgerhq/hw-transport": "^6.27.10",
+    "@ledgerhq/hw-transport-webusb": "^6.27.10",
+    "axios": "^1.2.5",
+    "semver": "^7.3.8",
+    "tslib": "~2.4",
+    "ws": "^8.12.0"
   },
   "volta": {
     "node": "18.12.1"
