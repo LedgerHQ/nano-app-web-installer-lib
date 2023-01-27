@@ -1,5 +1,5 @@
 import { StatusCodes } from '@ledgerhq/hw-transport';
-import WS from 'ws';
+import WS from 'isomorphic-ws';
 
 
 export const createSocket = async ({ url, transport }): Promise<void> => {
