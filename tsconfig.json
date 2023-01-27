@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES5",
+    "module": "es6",
     "lib": ["ES2022"],
     "moduleResolution": "node",
     "rootDir": ".",
