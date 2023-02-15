@@ -11,7 +11,7 @@ import {
 } from '@ledgerhq/types-live';
 import { FirmwareNotRecognized } from '@ledgerhq/errors';
 
-const getTargetId = async (transport: Transport): Promise<number> => {
+export const getTargetId = async (transport: Transport): Promise<number> => {
   const res = await transport.send(0xe0, 0x01, 0x00, 0x00);
   const data = res.slice(0, res.length - 2);
 
@@ -25,11 +25,65 @@ export const getAppsList = async (): Promise<Application[]> => {
     method: 'GET',
     url: 'https://manager.api.live.ledger.com/api/applications',
   });
-
   if (!data || !Array.isArray(data)) {
     throw new Error('Manager api down');
   }
+  return data;
+};
 
+const getDeviceVersion = async (
+  targetId: string | number,
+  provider: number,
+): Promise<DeviceVersion> => {
+  const { data }: { data: DeviceVersion } = await axios("https://manager.api.live.ledger.com/api/get_device_version",
+  {
+    method: "POST",
+    headers: {
+      'Content-type': 'application/x-www-form-urlencoded',
+    },
+    data: JSON.stringify({
+      target_id: targetId,
+      provider,
+    })
+  }).catch((error) => {
+      const status =
+        error && (error.status || (error.response && error.response.status)); // FIXME LLD is doing error remapping already. we probably need to move the remapping in live-common
+
+      if (status === 404) {
+        throw new FirmwareNotRecognized(
+          'manager api did not recognize targetId=' + targetId,
+          {
+            targetId,
+          },
+        );
+      }
+
+      throw error;
+    });
+  return data;
+};
+
+const getCurrentFirmware = async (
+  version: string,
+  deviceId: string | number,
+  provider: number,
+): Promise<FinalFirmware> => {
+  const url = new URL(
+    `https://manager.api.live.ledger.com/api/get_firmware_version`,
+  );
+  const { data }: {
+    data: FinalFirmware;
+  } = await axios(url.toString(), {
+    method: "POST",
+    headers: {
+      'Content-type': 'application/x-www-form-urlencoded',
+    },
+    data: JSON.stringify({
+      device_version: deviceId,
+      version_name: version,
+      provider: 1,
+    })
+  });
   return data;
 };
 
@@ -56,77 +110,24 @@ export const installApp = async (
   });
 };
 
-const getDeviceVersion = async (
-  targetId: string | number,
-  provider: number,
-): Promise<DeviceVersion> => {
-  const url = new URL(
-    `wss://scriptrunner.api.live.ledger.com/update/get_device_version`,
-  );
-
-  const {
-    data,
-  }: {
-    data: DeviceVersion;
-  } = await axios
-    .post(url.toString(), {
-      provider,
-      target_id: targetId,
-    })
-    .catch((error) => {
-      const status =
-        error && (error.status || (error.response && error.response.status)); // FIXME LLD is doing error remapping already. we probably need to move the remapping in live-common
-
-      if (status === 404) {
-        throw new FirmwareNotRecognized(
-          'manager api did not recognize targetId=' + targetId,
-          {
-            targetId,
-          },
-        );
-      }
-
-      throw error;
-    });
-  return data;
-};
-
-const getCurrentFirmware = async (
-  version: string,
-  deviceId: string | number,
-  provider: number,
-): Promise<FinalFirmware> => {
-  const url = new URL(
-    `wss://scriptrunner.api.live.ledger.com/update/get_device_version`,
-  );
-
-  const {
-    data,
-  }: {
-    data: FinalFirmware;
-  } = await axios.post(url.toString(), {
-    device_version: deviceId,
-    version_name: version,
-    provider: provider,
-  });
-  return data;
-};
-
 const applicationsByDevice = async (
   device_version: Id,
   current_se_firmware_final_version: Id,
   provider: number,
 ): Promise<ApplicationVersion[]> => {
-  const url = new URL(`wss://scriptrunner.api.live.ledger.com/update/get_apps`);
-
-  const {
-    data,
-  }: {
+  const url = new URL(`https://manager.api.live.ledger.com/api/get_apps`);
+  const { data } : {
     data: { application_versions: ApplicationVersion[] };
-  } = await axios.post(url.toString(), {
-    device_version: device_version,
-    current_se_firmware_final_version: current_se_firmware_final_version,
-    provider: provider,
+  } = await axios(url.toString(), {
+    method: "POST",
+    headers: {
+      'Content-type': 'application/x-www-form-urlencoded',
+    },
+    data: JSON.stringify({
+      device_version: device_version,
+      current_se_firmware_final_version: current_se_firmware_final_version,
+      provider: 1,
+    })
   });
   return data.application_versions;
 };
@@ -138,14 +139,14 @@ export const getAppsListByDevice = async (
 ): Promise<ApplicationVersion[]> => {
   if (deviceInfo.isOSU || deviceInfo.isBootloader) return Promise.resolve([]);
   const deviceVersionP = getDeviceVersion(deviceInfo.targetId, provider);
-  const firmwareDataP = deviceVersionP.then((deviceVersion) =>
-    getCurrentFirmware(String(deviceVersion.id), deviceInfo.version, provider),
+  const firmwareDataP = await deviceVersionP.then((deviceVersion) =>
+    getCurrentFirmware(String(deviceInfo.version), deviceVersion.id, provider),
   );
   const applicationsByDeviceP = Promise.all([
     deviceVersionP,
     firmwareDataP,
   ]).then(([deviceVersion, firmwareData]) =>
-    applicationsByDevice(firmwareData.id, deviceVersion.id, provider),
+    applicationsByDevice(deviceVersion.id, firmwareData.id, provider),
   );
   const [applicationsList, compatibleAppVersionsList] = await Promise.all([
     getAppsList(),
