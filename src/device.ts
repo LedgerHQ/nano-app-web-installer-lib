@@ -330,27 +330,7 @@ const isDevFirmware = (seVersion: string | undefined): boolean => {
   return knownDevSuffixes.some((suffix) => seVersion.includes('-' + suffix));
 };
 
-
-export const openApp = async (transport: Transport, name: string): Promise<any> => {
-  try {
-    await transport.send(0xe0, 0xd8, 0x00, 0x00, Buffer.from(name, "ascii"));
-  } catch (error) {
-    // @ts-expect-error typescript not checking agains the instanceof
-    if (error instanceof TransportStatusError && error.statusCode == 28160){
-      return {
-        statusCode: 9000,
-        message: "App already open"
-      }
-    }
-    throw error
-  }
-};
-
-export const quitCurrentApp = async (transport: Transport): Promise<void> => {
-  await transport.send(0xb0, 0xa7, 0x00, 0x00);
-};
-
-export const getCurrentAppAndVersion = async (
+export const getAllAppInstalled = async (
   transport: Transport
 ): Promise<any> => {
   const payload = await transport.send(0xe0, 0xde, 0, 0);
