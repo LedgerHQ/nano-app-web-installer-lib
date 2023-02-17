@@ -121,8 +121,8 @@ export const installApp = async (
 export const installAppByName = async (
   appName: string,
   transport: Transport,
-  isDelete: boolean = false,
-  provider: number = 1
+  isDelete = false,
+  provider = 1
 ): Promise<void> => {
 
   // get info about the device to fetch its app
