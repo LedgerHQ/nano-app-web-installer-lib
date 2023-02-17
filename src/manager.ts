@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createSocket } from './socket.js';
+import { getDeviceInfo } from './device.js';
 import Transport from '@ledgerhq/hw-transport';
 import {
   Application,
@@ -11,7 +12,7 @@ import {
 } from '@ledgerhq/types-live';
 import { FirmwareNotRecognized } from '@ledgerhq/errors';
 
-export const getTargetId = async (transport: Transport): Promise<number> => {
+const getTargetId = async (transport: Transport): Promise<number> => {
   const res = await transport.send(0xe0, 0x01, 0x00, 0x00);
   const data = res.slice(0, res.length - 2);
 
@@ -92,6 +93,44 @@ export const installApp = async (
   transport: Transport,
   isDelete: boolean,
 ): Promise<void> => {
+  const url = new URL(`wss://scriptrunner.api.live.ledger.com/update/install`);
+
+  url.searchParams.append('targetId', String(await getTargetId(transport)));
+  url.searchParams.append('perso', app.perso);
+  url.searchParams.append('deleteKey', app.delete_key);
+  url.searchParams.append('firmware', isDelete ? app.delete : app.firmware);
+  url.searchParams.append(
+    'firmwareKey',
+    isDelete ? app.delete_key : app.firmware_key,
+  );
+  url.searchParams.append('hash', app.hash);
+
+  await createSocket({
+    transport,
+    url,
+  });
+};
+
+/**
+ * Helper to install an app to nano using only its name
+ * @param appName: string name of your apps
+ * @param transport object return by ledgerhq/hw-transport when connected to a Nano device
+ * @param isDelete: boolean set to true to uninstall
+ */
+export const installAppByName = async (
+  appName: string,
+  transport: Transport,
+  isDelete: boolean = false,
+): Promise<void> => {
+
+  // get info about the device to fetch its app
+  const deviceInfo = await getDeviceInfo(transport);
+  // load all app available for device
+  const appByDevice = await getAppsListByDevice(deviceInfo, false, 1);
+  // find the app using its name
+  const app = appByDevice.find( app => app.name == appName);
+  if (!app) throw `No app found on this device with the name ${appName}`;
+
   const url = new URL(`wss://scriptrunner.api.live.ledger.com/update/install`);
 
   url.searchParams.append('targetId', String(await getTargetId(transport)));
