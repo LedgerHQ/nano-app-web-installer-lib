@@ -332,7 +332,13 @@ const isDevFirmware = (seVersion: string | undefined): boolean => {
 
 export const getAllAppInstalled = async (
   transport: Transport
-): Promise<any> => {
+): Promise<Array<{
+  name: string;
+  hash: string;
+  hashCodeData: string;
+  blocks: number;
+  flags: number;
+}>> => {
   const payload = await transport.send(0xe0, 0xde, 0, 0);
   const apps: Array<{
     name: string;
