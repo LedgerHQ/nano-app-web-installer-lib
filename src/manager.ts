@@ -82,7 +82,7 @@ const getCurrentFirmware = async (
     data: JSON.stringify({
       device_version: deviceId,
       version_name: version,
-      provider: 1,
+      provider,
     })
   });
   return data;
@@ -116,17 +116,19 @@ export const installApp = async (
  * @param appName: string name of your apps
  * @param transport object return by ledgerhq/hw-transport when connected to a Nano device
  * @param isDelete: boolean set to true to uninstall
+ * @param provider
  */
 export const installAppByName = async (
   appName: string,
   transport: Transport,
   isDelete: boolean = false,
+  provider: number = 1
 ): Promise<void> => {
 
   // get info about the device to fetch its app
   const deviceInfo = await getDeviceInfo(transport);
   // load all app available for device
-  const appByDevice = await getAppsListByDevice(deviceInfo, false, 1);
+  const appByDevice = await getAppsListByDevice(deviceInfo, false, provider);
   // find the app using its name
   const app = appByDevice.find( app => app.name == appName);
   if (!app) throw `No app found on this device with the name ${appName}`;
@@ -165,7 +167,7 @@ const applicationsByDevice = async (
     data: JSON.stringify({
       device_version: device_version,
       current_se_firmware_final_version: current_se_firmware_final_version,
-      provider: 1,
+      provider,
     })
   });
   return data.application_versions;

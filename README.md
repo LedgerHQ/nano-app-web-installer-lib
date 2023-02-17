@@ -28,6 +28,9 @@ transport = await TransportWebUSB.create();
 const apps = await getAllAppInstalled(transport);
 const isInstalled = !!apps.find(app => app.name == myAppName);
 
-// Note this function returns when the installation starts, not finishes 
+// Note this function returns when the installation starts, not finishes
+// Optionnal parameters: 
+// delete: boolean set to true to uninstall the app instead
+// provider: number. Catalog of apps. default to 1 (production and tested)  
 await installAppByName(myAppName, transport);
 ```
