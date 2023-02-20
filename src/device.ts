@@ -330,6 +330,9 @@ const isDevFirmware = (seVersion: string | undefined): boolean => {
   return knownDevSuffixes.some((suffix) => seVersion.includes('-' + suffix));
 };
 
+
+// taken from https://github.com/LedgerHQ/ledger-live/blob/develop/libs/ledger-live-common/src/hw/listApps.ts
+// with wrapper to catch uninstalled app causing this to fail, instead returns empty array
 export const getAllAppInstalled = async (
   transport: Transport
 ): Promise<Array<{
@@ -352,6 +355,9 @@ export const getAllAppInstalled = async (
   // more than the status bytes
   while (data.length > 2) {
     if (payload[0] !== 0x01) {
+      if (payload.length == 176){
+        return []
+      }
       throw new Error("unknown listApps format");
     }
 
