@@ -11,7 +11,7 @@ A hw-transport library is required to communicate with the device, for instance
 
 ## Installation
 
-    npm install --save @ledgerhq/nano-app-web-installer-web
+    npm install --save @ledgerhq/nano-app-web-installer-lib
 
 ## Usage
 
