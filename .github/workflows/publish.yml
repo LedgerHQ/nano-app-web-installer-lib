@@ -1,0 +1,15 @@
+name: Publish to NPM
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - run: npm ci --no-audit
+      - run: npm run lint --if-present
+      - run: npm run build:release --if-present
+      - name: Publish package to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPMJS_TOKEN}}
