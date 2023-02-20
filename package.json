@@ -6,9 +6,24 @@
   "engines": {
     "node": ">= 16 <19"
   },
+  "keywords": [
+    "Ledger",
+    "LedgerWallet",
+    "NanoS",
+    "NanoX",
+    "Hardware Wallet"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LedgerHQ/nano-app-web-installer-lib.git"
+  },
+  "homepage": "https://github.com/LedgerHQ/nano-app-web-installer-lib",
   "main": "dist/index.js",
   "types": "dist/src/index.d.ts",
   "module": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@ledgerhq/types-live": "^6.28.1",
     "@types/jest": "~29.2",
