@@ -16,7 +16,7 @@ A hw-transport library is required to communicate with the device, for instance
 ## Usage
 
 ```javascript
-import { installAppByName, getAllAppInstalled } from 'nano-app-web-installer-lib-test';
+import { installAppByName, getAllAppInstalled } from '@ledgerhq/nano-app-web-installer-lib';
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 
 const myAppName = "Cosmos";
@@ -33,4 +33,26 @@ const isInstalled = !!apps.find(app => app.name == myAppName);
 // delete: boolean set to true to uninstall the app instead
 // provider: number. Catalog of apps. default to 1 (production and tested)  
 await installAppByName(myAppName, transport);
+```
+
+
+## Get all apps for a device (to find its name for example)
+
+An app name is Capitalized.
+- Ethereum
+- Cosmos
+- Bitcoin
+
+If you need to know all apps name for a device run 
+
+```javascript
+
+import { getDeviceInfo, getAppsListByDevice } from '@ledgerhq/nano-app-web-installer-lib';
+
+// Catalog of apps. 1 is production and tested
+const provider = 1;  
+// get all device info to know its available apps
+const deviceInfo = await getDeviceInfo(transport);
+// load all app available for device. Second param is dev mode. set to false
+const appByDevice = await getAppsListByDevice(deviceInfo, false, provider);
 ```
