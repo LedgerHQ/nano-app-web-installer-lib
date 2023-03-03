@@ -16,13 +16,39 @@ A hw-transport library is required to communicate with the device, for instance
 ## Usage
 
 ```javascript
-import { installAppByName, getAllAppInstalled } from '@ledgerhq/nano-app-web-installer-lib';
+import { installAppByName, getAllAppInstalled, getDeviceInfo } from '@ledgerhq/nano-app-web-installer-lib';
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 
 const myAppName = "Cosmos";
 
 // create connection to nano device
-transport = await TransportWebUSB.create();
+const transport = await TransportWebUSB.create();
+const info = await getDeviceInfo(transport);
+switch (transport.deviceModel.id) {
+    case "nanoX":
+        if(info.version === '2.1.0') {
+            await installAppByName(appName, transport, isDelete, 4);
+        } else {
+            throw "Device is not up to date"
+        }
+        break;
+    case "nanoSP":
+        if(info.version === '1.1.0') {
+            await installAppByName(appName, transport, isDelete, 4);
+        } else {
+            throw "Device is not up to date"
+        }
+        break;
+    case "nanoS":
+        if(info.version === '2.1.0') {
+            await installAppByName(appName, transport, isDelete, 4);
+        } else {
+            throw "Device is not up to date"
+        }
+        break;
+    default:
+        throw "Device not recognized"
+}
 
 // check if apps already exists
 const apps = await getAllAppInstalled(transport);
@@ -32,7 +58,7 @@ const isInstalled = !!apps.find(app => app.name == myAppName);
 // Optionnal parameters: 
 // delete: boolean set to true to uninstall the app instead
 // provider: number. Catalog of apps. default to 1 (production and tested)  
-await installAppByName(myAppName, transport);
+await installAppByName(myAppName, transport, false, 4);
 ```
 
 
@@ -42,6 +68,7 @@ An app name is Capitalized.
 - Ethereum
 - Cosmos
 - Bitcoin
+- staRknet
 
 If you need to know all apps name for a device run 
 
