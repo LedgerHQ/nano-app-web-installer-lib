@@ -24,7 +24,9 @@ This code sample shows how to :
 import { installAppByName, getAllAppInstalled, getDeviceInfo } from '@ledgerhq/nano-app-web-installer-lib';
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 
-const myAppName = "Cosmos";
+const myAppName = "staRknet";
+// starknet app only available in staging (provider: 4)
+const provider = 4;
 
 // create connection to nano device
 const transport = await TransportWebUSB.create();
