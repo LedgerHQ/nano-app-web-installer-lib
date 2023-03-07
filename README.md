@@ -24,29 +24,36 @@ This code sample shows how to :
 import { installAppByName, getAllAppInstalled, getDeviceInfo } from '@ledgerhq/nano-app-web-installer-lib';
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 
-const myAppName = "Cosmos";
+const myAppName = "staRknet";
+
+// starknet app is only availble in staging, provider = 4
+const provider = 4;
+
+// set to true to uninstall app
+const isDelete = false;
 
 // create connection to nano device
 const transport = await TransportWebUSB.create();
 const info = await getDeviceInfo(transport);
+
 switch (transport.deviceModel.id) {
     case "nanoX":
         if(info.version === '2.1.0') {
-            await installAppByName(appName, transport, isDelete, 4);
+            await installAppByName(appName, transport, isDelete, provider);
         } else {
             throw "Device is not up to date"
         }
         break;
     case "nanoSP":
         if(info.version === '1.1.0') {
-            await installAppByName(appName, transport, isDelete, 4);
+            await installAppByName(appName, transport, isDelete, provider);
         } else {
             throw "Device is not up to date"
         }
         break;
     case "nanoS":
         if(info.version === '2.1.0') {
-            await installAppByName(appName, transport, isDelete, 4);
+            await installAppByName(appName, transport, isDelete, provider);
         } else {
             throw "Device is not up to date"
         }
