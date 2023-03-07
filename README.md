@@ -15,6 +15,11 @@ A hw-transport library is required to communicate with the device, for instance
 
 ## Usage
 
+This code sample shows how to :
+- Create a transport connection with webUSB
+- Get the firmware version of a device
+- Install an app using its name
+
 ```javascript
 import { installAppByName, getAllAppInstalled, getDeviceInfo } from '@ledgerhq/nano-app-web-installer-lib';
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
